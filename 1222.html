@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thành Vinh – Mua Bán Xe ÔTÔ Miền Nam</title>
+<style>
+/* ============================== 
+   GIAO DIỆN CHUNG
+============================== */
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    background: #eef1f5;
+    transition: background 0.3s;
+}
+body:hover { background: #e0e7f1; }
+
+header {
+    background: linear-gradient(135deg, #141e30, #243b55);
+    color: white;
+    padding: 30px;
+    text-align: center;
+    font-size: 26px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.3s;
+}
+header:hover { transform: scale(1.02); }
+
+.car-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    padding: 30px;
+}
+
+.car-card {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    transition: 0.3s ease, transform 0.3s;
+    cursor: pointer;
+}
+.car-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.18);
+}
+
+.car-card img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    border-radius: 15px;
+    transition: transform 0.3s;
+}
+.car-card img:hover { transform: scale(1.05); }
+
+.car-card button {
+    margin-top: 10px;
+    background: linear-gradient(135deg, #1e88e5, #0d47a1);
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+}
+.car-card button:hover {
+    background: linear-gradient(135deg, #0d47a1, #1e88e5);
+    transform: scale(1.05);
+}
+
+.price {
+    font-weight: bold;         
+    font-size: 22px;           
+    color: #0d47a1;
+    margin-top: 5px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(4px);
+    overflow-y: auto;
+    padding: 40px 0;
+    transition: opacity 0.3s;
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 800px;
+    margin: auto;
+    padding: 25px;
+    border-radius: 20px;
+    animation: fadeIn 0.25s;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: default;
+}
+.modal-content:hover {
+    transform: scale(1.02);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+}
+
+.modal-content img {
+    width: 100%;
+    border-radius: 15px;
+    max-height: 300px; 
+    object-fit: contain; 
+}
+
+.slide-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    font-size: 24px;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 50%;
+    user-select: none;
+}
+.slide-btn:hover { background: rgba(0,0,0,0.7); }
+#prevBtn { left: 10px; }
+#nextBtn { right: 10px; }
+
+.hide-desc { display: none !important; }
+
+.note-box {
+    margin-top: 20px;          
+    padding: 15px;             
+    border-radius: 10px;       
+    background: linear-gradient(135deg, #ffcf33, #ff9f1c);
+    color: #222;               
+    border-left: 8px solid #ff4d00; 
+    font-size: 18px;           
+    font-weight: 600;          
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.note-box:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+
+.contact-box {
+    text-align: center;
+    padding: 30px;
+    background: white;
+    margin: 20px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+.contact-box a {
+    display: block;
+    margin: 10px 0;
+    padding: 12px;
+    background: #0d47a1;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: background 0.3s, transform 0.2s;
+}
+.contact-box a:hover {
+    background: #1e88e5; 
+    transform: scale(1.05);
+}
+
+.floating-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.floating-btn a {
+    background: #0d47a1; 
+    color: white;
+    padding: 14px 18px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transition: transform 0.2s, background 0.3s;
+}
+.floating-btn a:hover { transform: scale(1.1); background: #1e88e5; }
+
+.admin-panel {
+    text-align: center;
+    margin: 20px 0;
+    padding: 15px;
+    background: white; 
+    border-radius: 12px;
+    display: none;
+}
+#adjustPanel { margin-top: 15px; padding: 10px; border: 1px dashed #0d47a1; border-radius: 10px; background: #f0f4f8; }
+#adjustPanel label { margin-right: 10px; font-weight: bold; }
+#adjustPanel input { margin-right: 15px; }
+</style>
+</head>
+<body onload="initPage()">
+
+<header>Thành Vinh – Mua Bán Xe ÔTÔ Miền Nam - 039.767.0298</header>
+<h2>Xem thông tin xe chi tiết - Liên hệ qua zalo nhé !!!!Cửa hàng Ở Thuận An - Bình Dương</h2>
+<div id="carList" class="car-list"></div>
+
+<!-- POPUP -->
+<div id="carDetail" class="modal" onclick="clickOutsidePopup(event)">
+    <div class="modal-content">
+        <span class="close" onclick="closeDetail()">&times;</span>
+        <h2 id="detailName"></h2>
+        <div style="position:relative;">
+            <img id="detailImg" src="">
+            <button id="prevBtn" class="slide-btn" onclick="prevSlide()" style="display:none;">&#10094;</button>
+            <button id="nextBtn" class="slide-btn" onclick="nextSlide()" style="display:none;">&#10095;</button>
+        </div>
+        <p id="detailPrice" class="price"></p>
+        <p id="detailDesc" class="hide-desc"></p>
+        <div id="detailNote" class="note-box">Không có ghi chú.</div>
+
+        <!-- ADMIN PANEL -->
+        <div id="adjustPanel" class="admin-panel">
+            <label>Font Size (px):</label>
+            <input type="number" id="fontSizeInput" value="22">
+            <label>Màu (HEX):</label>
+            <input type="color" id="fontColorInput" value="#0d47a1">
+            <button onclick="updatePriceStyle()">Cập nhật</button>
+            <br><br>
+            <label>Upload Ảnh Chính: </label>
+            <input type="file" id="uploadMainImg" accept="image/*" onchange="addMainImage(this)">
+            <br><br>
+            <label>Upload Ảnh Phụ: </label>
+            <input type="file" id="uploadExtraImg" multiple accept="image/*" onchange="addExtraImages(this)">
+            <br><br>
+            <button onclick="removeCurrentImage()">Xóa ảnh hiện tại</button>
+        </div>
+    </div>
+</div>
+
+<div class="contact-box">
+    <h2>Liên Hệ Trực Tiếp</h2>
+    <a href="https://zalo.me/0397670298" target="_blank">📱 Zalo: 039.7670298</a>
+    <a href="tel:0397670298">📞 Gọi ngay</a>
+    <a href="https://www.tiktok.com/@thanhvinhmuabanxe" target="_blank">🎵 TikTok</a>
+</div>
+
+<div class="floating-btn">
+    <a href="tel:0397670298">📞 Gọi</a>
+    <a href="https://zalo.me/0397670298" target="_blank">💬 Zalo</a>
+    <a href="https://www.tiktok.com/@thanhvinhmuabanxe" target="_blank">🎵 TikTok</a>
+</div>
+
+<script>
+let cars = [];
+let currentCarIndex = 0;
+let currentSlide = 0;
+const adminPass = "123456";
+
+function initPage(){
+    loadCars();
+    checkAdmin();
+    renderCars();
+}
+
+function saveCars(){ localStorage.setItem("carsData", JSON.stringify(cars)); }
+function loadCars(){
+    const data = localStorage.getItem("carsData");
+    if(data){
+        cars = JSON.parse(data);
+    } else {
+        cars = [
+            {
+                name:"Toyota Vios 2018",
+                price:"275.000.000 VND",
+                mainImg:"https://i.postimg.cc/SRJ7rmxh/IMG-5426.jpg",
+                imgs:["https://i.postimg.cc/SRJ7rmxh/IMG-5426.jpg"],
+                note:"Vios 2018 form mới 2019, Số sàn động cơ 1.5 , odo 7.7v , Nội ngoại thất đẹp , xe đã có màn hình Android, cam de cam lùi."
+            },
+            {
+                name:"Toyota Vios 2019",
+                price:"265.000.000 VND",
+                mainImg:"https://i.postimg.cc/VLY53zym/z7268117325966-3703ad59d14d4a1cb7f2ddd7da6682c6.jpg",
+                imgs:["https://i.postimg.cc/VLY53zym/z7268117325966-3703ad59d14d4a1cb7f2ddd7da6682c6.jpg"],
+                note:"Vios 2019 số sàn bản đầy đủ trang bị 7 túi khí,1 chủ sử dụng từ mới, máy zin không lỗi,Giá 285tr bao rút hồ sơ , ngân hàng góp 50% bán thiếu 50tr, bảo hành máy 6 tháng ."
+            },
+            {
+                name:"Huyndai i10 2016",
+                price:"185.000.000 VND",
+                mainImg:"https://i.postimg.cc/hPgyWpqF/i10.jpg",
+                imgs:["https://i.postimg.cc/hPgyWpqF/i10.jpg"],
+                note:"Huyndai i10 2016mt bản đủ máy 1.2,Xe đẹp máy êm  ko đâm đụng ngập nước,Trang bị nội ngoại thất sạch sẽ, ghế da, gác tay,Đã lên Màn hình cảm ứng, cam lùi cam hành trình , bọc trần chống nong đầy đủ,Bao rút hồ sơ,Bảo hành máy 6 tháng."
+            },
+            // Thêm các xe mới vào đây
+            {
+                name: "Xpander 2019",
+                price: "395.000.000 VND",
+                mainImg: "https://i.postimg.cc/C5JjVCjm/z7260228784873-191bf311ee6e8462269ca8df0faf9cc8.jpg",
+                imgs: ["https://i.postimg.cc/C5JjVCjm/z7260228784873-191bf311ee6e8462269ca8df0faf9cc8.jpg"],
+                note: "Xpander 2019 số tự động, động cơ 1,5. bản Eco, tư nhân chính chủ máy zin, nội ngoại thất sạch sẽ, mình thùng thẳng tắp. Trang bị  khóa cửa thông minh, phím bấm vô lăng, khởi động nút đề, chân ga tự động, màn hình androi, cam lùi cam hành trình, đặc biệt có cam 360, bao rút hồ sơ, ngân hàng hỗ trợ 50% ,bảo hành máy 6  tháng."
+            },
+             {
+                name: "Huyndai Elentra 2018",
+                price: "385.000.000 VND",
+                mainImg: "https://i.postimg.cc/xdTGt4H7/z7250481960902-846663297a4b90ce4b2ab19354b2cc52.jpg",
+                imgs: ["https://i.postimg.cc/xdTGt4H7/z7250481960902-846663297a4b90ce4b2ab19354b2cc52.jpg"],
+                note: "Huyndai elentra 2018 at 1.6 bản Gls,econ tiết kiệm,cân bằng điện tử,crucantron,4 thắng đĩa... Xe gia đình 1 chủ từ đầu Phân khúc c,full cửa nóc Chào 385tr bao hồ sơ Có bán thiếu ko lãi Bank hỗ trợ 50% Xem xe An Phú Thuận An Bình Dương"
+            },
+             {
+                name: "BWM 320i 2010",
+                price: "650.000.000 VND",
+                mainImg: "https://i.postimg.cc/VvLc61b7/z7271328539372-a5f6aabb31fcf10fc8a6a91100e787c3.jpg",
+                imgs: ["https://i.postimg.cc/VvLc61b7/z7271328539372-a5f6aabb31fcf10fc8a6a91100e787c3.jpg"],
+                note: "BMW 320i đời 2010 số tự động, động cơ 2.0, 1 mẫu xe mang thương hiệu Đức, chạy đầm chắc, xe gia đình sử dụng máy số bao êm, ko lỗi Giá 265tr bao rút hồ sơ gốc, bao quay đầu xe, bảo hành máy 6 tháng"
+            },
+             {
+                name: "Mitsubishi Jolie 2004",
+                price: "79.000.000 VND",
+                mainImg: "https://i.postimg.cc/GpGBPPg6/z7259715844685-71ab715dc8e5fb84d6060b823412935b.jpg",
+                imgs: ["https://i.postimg.cc/GpGBPPg6/z7259715844685-71ab715dc8e5fb84d6060b823412935b.jpg"],
+                note: "Mitsubishi Jolie 2004 bản Ss cao cấp nhất 8 chỗ ngồi, Xe đẹp, máy số chạy êm mượt, Nội thất ghế nỉ nguyên bản, Xe trang bị đèn cột mắt liếc, lốp treo dự phòng, 2 giàn lạnh, Giá bán 79 triệu"
+            },
+             {
+                name: "Kia Cerato 2020",
+                price: "650.000.000 VND",
+                mainImg: "https://i.imgur.com/xYwzpN2.jpg",
+                imgs: ["https://i.imgur.com/xYwzpN2.jpg"],
+                note: "Xe chính chủ, đi ít."
+            },
+             {
+                name: "Kia Cerato 2020",
+                price: "650.000.000 VND",
+                mainImg: "https://i.imgur.com/xYwzpN2.jpg",
+                imgs: ["https://i.imgur.com/xYwzpN2.jpg"],
+                note: "Xe chính chủ, đi ít."
+            },
+             {
+                name: "Kia Cerato 2020",
+                price: "650.000.000 VND",
+                mainImg: "https://i.imgur.com/xYwzpN2.jpg",
+                imgs: ["https://i.imgur.com/xYwzpN2.jpg"],
+                note: "Xe chính chủ, đi ít."
+            },
+             {
+                name: "Kia Cerato 2020",
+                price: "650.000.000 VND",
+                mainImg: "https://i.imgur.com/xYwzpN2.jpg",
+                imgs: ["https://i.imgur.com/xYwzpN2.jpg"],
+                note: "Xe chính chủ, đi ít."
+            },
+             {
+                name: "Kia Cerato 2020",
+                price: "650.000.000 VND",
+                mainImg: "https://i.imgur.com/xYwzpN2.jpg",
+                imgs: ["https://i.imgur.com/xYwzpN2.jpg"],
+                note: "Xe chính chủ, đi ít."
+            },
+        ];
+        saveCars();
+    }
+}
+
+function renderCars(){
+    const carList = document.getElementById("carList");
+    carList.innerHTML = "";
+    cars.forEach((car, index)=>{
+        const card = document.createElement("div");
+        card.className = "car-card";
+        card.innerHTML = `
+            <img src="${car.mainImg || car.imgs[0]}">
+            <h3>${car.name}</h3>
+            <p class="price">${car.price}</p>
+            <button onclick="showDetail(${index})">Xem chi tiết</button>
+        `;
+        card.addEventListener("click", e=>{ 
+            if(e.target.tagName !== "BUTTON") showDetail(index);
+        });
+        carList.appendChild(card);
+    });
+}
+
+function showDetail(i){
+    currentCarIndex = i;
+    currentSlide = 0;
+    const car = cars[i];
+    document.getElementById("detailName").innerText = car.name;
+    document.getElementById("detailImg").src = car.imgs[currentSlide];
+    document.getElementById("detailPrice").innerText = "Giá: " + car.price;
+    document.getElementById("detailNote").innerText = car.note || "Không có ghi chú.";
+    document.getElementById("carDetail").style.display = "block";
+    document.body.style.overflow = "hidden";
+    updateSlideButtons();
+
+    document.getElementById("fontSizeInput").value = parseInt(window.getComputedStyle(document.getElementById("detailPrice")).fontSize);
+    document.getElementById("fontColorInput").value = rgbToHex(window.getComputedStyle(document.getElementById("detailPrice")).color);
+}
+
+function closeDetail(){
+    document.getElementById("carDetail").style.display = "none";
+    document.body.style.overflow = "auto";
+}
+function clickOutsidePopup(e){
+    if(!document.querySelector(".modal-content").contains(e.target)) closeDetail();
+}
+
+function prevSlide(){
+    const car = cars[currentCarIndex];
+    if(car.imgs.length === 0) return;
+    currentSlide = (currentSlide-1 + car.imgs.length) % car.imgs.length;
+    document.getElementById("detailImg").src = car.imgs[currentSlide];
+    updateSlideButtons();
+}
+function nextSlide(){
+    const car = cars[currentCarIndex];
+    if(car.imgs.length === 0) return;
+    currentSlide = (currentSlide+1) % car.imgs.length;
+    document.getElementById("detailImg").src = car.imgs[currentSlide];
+    updateSlideButtons();
+}
+function updateSlideButtons(){
+    const car = cars[currentCarIndex];
+    document.getElementById("prevBtn").style.display = car.imgs.length>1 ? "block":"none";
+    document.getElementById("nextBtn").style.display = car.imgs.length>1 ? "block":"none";
+}
+
+function updatePriceStyle(){
+    const price = document.getElementById("detailPrice");
+    const size = document.getElementById("fontSizeInput").value;
+    const color = document.getElementById("fontColorInput").value;
+    price.style.fontSize = size + "px";
+    price.style.color = color;
+}
+
+/* Thêm ảnh chính */
+function addMainImage(input){
+    const file = input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = e=>{
+        const car = cars[currentCarIndex];
+        car.mainImg = e.target.result;
+        if(!car.imgs) car.imgs = [];
+        car.imgs.unshift(e.target.result);
+        currentSlide = 0;
+        document.getElementById("detailImg").src = car.imgs[0];
+        saveCars();
+        renderCars();
+        updateSlideButtons();
+    };
+    reader.readAsDataURL(file);
+}
+
+/* Thêm ảnh phụ */
+function addExtraImages(input){
+    const files = input.files;
+    const car = cars[currentCarIndex];
+    if(!car.imgs) car.imgs = [];
+    const promises = [];
+    for(let i=0;i<files.length;i++){
+        promises.push(new Promise((resolve,reject)=>{
+            const reader = new FileReader();
+            reader.onload = e=>{
+                car.imgs.push(e.target.result);
+                resolve();
+            }
+            reader.onerror = ()=>reject();
+            reader.readAsDataURL(files[i]);
+        }));
+    }
+    Promise.all(promises).then(()=>{
+        saveCars();
+        document.getElementById("detailImg").src = car.imgs[currentSlide];
+        updateSlideButtons();
+    });
+}
+
+/* Xóa ảnh hiện tại */
+function removeCurrentImage(){
+    const car = cars[currentCarIndex];
+    if(!car.imgs || car.imgs.length===0) return;
+    if(!confirm("Xóa ảnh này?")) return;
+
+    const removed = car.imgs.splice(currentSlide,1)[0];
+    if(car.mainImg === removed){
+        car.mainImg = car.imgs[0] || "";
+    }
+
+    currentSlide = Math.min(currentSlide, car.imgs.length - 1);
+    document.getElementById("detailImg").src = car.imgs.length>0?car.imgs[currentSlide]:"";
+    saveCars();
+    renderCars();
+    updateSlideButtons();
+}
+
+function rgbToHex(rgb){
+    const result = rgb.match(/\d+/g);
+    return "#" + ((1 << 24) + (parseInt(result[0]) <<16) + (parseInt(result[1])<<8) + parseInt(result[2])).toString(16).slice(1);
+}
+
+function checkAdmin(){
+    if(!sessionStorage.getItem("isAdmin")){
+        const pass = prompt("Nhập mật khẩu admin để chỉnh sửa:");
+        if(pass===adminPass){
+            sessionStorage.setItem("isAdmin","true");
+            document.querySelectorAll(".admin-panel").forEach(el=>el.style.display="block");
+        }
+    } else {
+        document.querySelectorAll(".admin-panel").forEach(el=>el.style.display="block");
+    }
+}
+</script>
+
+</body>
+</html>
